@@ -3,9 +3,29 @@ var Vec3 = require("vec3");
 
 const versions=['pe_0.14', 'pe_1.0', '1.8'];
 versions.forEach(function(version) {
-  var Chunk = require('../index.js')(version);
+  var Chunk = require('../src/index.js')(version);
   var Block = require('prismarine-block')(version);
   describe('chunk '+version, function () {
+    describe.only('should get', function() {
+      var chunks = new Object;
+
+      beforeEach(function() {
+        chunks.air = new Chunk();
+        chunks.dirt = new Chunk();
+        chunks.dirt.initialize(function(){
+          return new Block(3,1,0);
+        });
+      });
+      it('a block from getBlock()', function(){
+      //   console.log(chunks);
+      //   console.log(chunks.dirt.getBlock(new Vec3(0,0,0)));
+      //   console.log(chunks.air.getBlock(new Vec3(0,0,0)));
+
+        // assert.equal(chunks.air.getBlock(new Vec3(0,0,0)).type, 0);
+        assert.equal(chunks.dirt.getBlock(new Vec3(0,0,0)).type, 3);
+      });
+    });
+
     it('should default to having all blocks be air', function () {
       var chunk = new Chunk();
 

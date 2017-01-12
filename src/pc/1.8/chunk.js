@@ -49,26 +49,30 @@ function parseBitMap(bitMap) {
 class Chunk {
 
   constructor() {
-    this.sections=new Array(sectionCount);
-    for(let i=0;i<sectionCount;i++)
-      this.sections[i]=new Section()
+    this.sections=new Array(1).fill(0);
+    this.sections.forEach(function(section, index, sections) {
+      sections[index] = new Section();
+    });
     this.biome=new Buffer(BIOME_SIZE);
     this.biome.fill(0);
   }
 
   initialize(iniFunc) {
-    let biome=-1;
-    for(let i=0;i<sectionCount;i++) {
-      this.sections.initialize((x,y,z,n) => {
-        let block= iniFunc(x,y%sh,z,n);
-        if(block==null)
+    this.sections.forEach(function(section) {
+      let biome = 0;
+      let counter = 0;
+      section.initialize((x,y,z,n) => {
+        let block = iniFunc(x,y%sh,z,n);
+        if(block==null) {
           return;
+        }
         if(y==0) {
-          biome++;
           this.biome.writeUInt8(block.biome.id || 0, biome);
+          biome++;
         }
       });
-    }
+    }, this);
+    console.log(this.biome.readUInt8());
   }
 
   getBlock(pos) {
@@ -192,4 +196,3 @@ class Chunk {
       throw(new Error(`Data buffer not correct size \(was ${data.length}, expected ${BUFFER_SIZE}\)`));
   }
 }
-
